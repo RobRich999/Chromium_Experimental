@@ -1,2 +1,3 @@
 # Chromium_Experimental
-Chromium Web Browser Experimental Builds
+
+**Experimental** builds of the Chromium web browser. No warranties. No gaurantees. Your mileage may vary.
