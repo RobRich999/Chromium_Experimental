@@ -320,7 +320,7 @@ index a75e176863061..5e202d525ec4f 100755
 +                '-mllvm', '-enable-gvn-hoist',
 +                '-mllvm', '-enable-loopinterchange',
 +                '-mllvm', '-enable-loop-flatten',
-+                '-mllvm', '-extra-vectorizer-passes'
++                '-mllvm', '-extra-vectorizer-passes',
 +                '-mllvm', '-interleave-small-loop-scalar-reduction',
 +                '-mllvm', '-loop-rotate-multi',
 +                '-mllvm', '-scalar-evolution-use-expensive-range-sharpening',
