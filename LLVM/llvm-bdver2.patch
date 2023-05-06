@@ -1,5 +1,25 @@
+diff --git a/media/filters/ffmpeg_video_decoder.cc b/media/filters/ffmpeg_video_decoder.cc
+index e62b2af59003c..86aec8821c578 100644
+--- a/media/filters/ffmpeg_video_decoder.cc
++++ b/media/filters/ffmpeg_video_decoder.cc
+@@ -74,7 +74,6 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+     case VideoCodec::kUnknown:
+     case VideoCodec::kVC1:
+     case VideoCodec::kMPEG2:
+-    case VideoCodec::kHEVC:
+     case VideoCodec::kVP9:
+     case VideoCodec::kAV1:
+     case VideoCodec::kDolbyVision:
+@@ -86,6 +85,7 @@ static int GetFFmpegVideoDecoderThreadCount(const VideoDecoderConfig& config) {
+       // No extra threads for these codecs.
+       break;
+ 
++    case VideoCodec::kHEVC:
+     case VideoCodec::kH264:
+     case VideoCodec::kVP8:
+       // Normalize to three threads for 1080p content, then scale linearly
 diff --git a/tools/clang/scripts/build.py b/tools/clang/scripts/build.py
-index a75e176863061..5e202d525ec4f 100755
+index a75e176863061..0af1536765da1 100755
 --- a/tools/clang/scripts/build.py
 +++ b/tools/clang/scripts/build.py
 @@ -366,6 +366,7 @@ def BuildLibXml2():
