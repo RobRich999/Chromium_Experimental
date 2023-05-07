@@ -51,7 +51,7 @@ index a75e176863061..3a9b33b358abb 100755
 -  ldflags = []
 +  cflags = [ '-O3 -DNDEBUG -w -march=bdver2 -mprefer-vector-width=128' ]
 +  cxxflags = [ '-O3 -DNDEBUG -w -march=bdver2 -mprefer-vector-width=128' ]
-+  ldflags = [ '-fuse-ld=lld' ]
++  ldflags = [ '-fuse-ld=lld -Wl,--threads=8' ]
 +
 +  # targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
 +  # projects = 'clang;lld;clang-tools-extra'
