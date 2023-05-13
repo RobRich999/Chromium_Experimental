@@ -1,6 +1,6 @@
-llvm-bdver2.patch - LLVM build script patch for AMD Piledriver architecture
+llvm-broadwell.patch - LLVM build script patch for Intel Broadwell architecture
 
-https://en.wikipedia.org/wiki/Piledriver_(microarchitecture)
+https://en.wikipedia.org/wiki/Broadwell_(microarchitecture)
 
 See main repo LLVM patch(es) for more information:
 
