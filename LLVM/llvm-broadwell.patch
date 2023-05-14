@@ -1,5 +1,5 @@
 diff --git a/tools/clang/scripts/build.py b/tools/clang/scripts/build.py
-index a75e176863061..447d986653b29 100755
+index a75e176863061..dc8051d4ef5f0 100755
 --- a/tools/clang/scripts/build.py
 +++ b/tools/clang/scripts/build.py
 @@ -366,6 +366,7 @@ def BuildLibXml2():
@@ -42,7 +42,7 @@ index a75e176863061..447d986653b29 100755
    if args.with_android and not os.path.exists(ANDROID_NDK_DIR):
      print('Android NDK not found at ' + ANDROID_NDK_DIR)
      print('The Android NDK is needed to build a Clang whose -fsanitize=address')
-@@ -681,17 +686,29 @@ def main():
+@@ -681,17 +686,28 @@ def main():
    # LLVM_ENABLE_LLD).
    cc, cxx, lld = None, None, None
  
@@ -75,11 +75,10 @@ index a75e176863061..447d986653b29 100755
 -  pic_mode = 'ON' if args.pic or pic_default else 'OFF'
 +  # pic_default = sys.platform == 'win32'
 +  # pic_mode = 'ON' if args.pic or pic_default else 'OFF'
-+  # pic_mode = 'ON'
  
    base_cmake_args = [
        '-GNinja',
-@@ -700,7 +717,7 @@ def main():
+@@ -700,7 +716,7 @@ def main():
        '-DLLVM_ENABLE_PROJECTS=' + projects,
        '-DLLVM_ENABLE_RUNTIMES=compiler-rt',
        '-DLLVM_TARGETS_TO_BUILD=' + targets,
@@ -88,7 +87,7 @@ index a75e176863061..447d986653b29 100755
        '-DLLVM_ENABLE_UNWIND_TABLES=OFF',
        '-DLLVM_ENABLE_TERMINFO=OFF',
        '-DLLVM_ENABLE_Z3_SOLVER=OFF',
-@@ -722,6 +739,7 @@ def main():
+@@ -722,6 +738,7 @@ def main():
        '-DLLVM_ENABLE_CURL=OFF',
        # Build libclang.a as well as libclang.so
        '-DLIBCLANG_BUILD_STATIC=ON',
@@ -96,7 +95,7 @@ index a75e176863061..447d986653b29 100755
    ]
  
    if sys.platform == 'darwin':
-@@ -788,21 +806,23 @@ def main():
+@@ -788,21 +805,23 @@ def main():
      sysroot_i386 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
      DownloadAndUnpack(U, sysroot_i386)
  
@@ -135,7 +134,7 @@ index a75e176863061..447d986653b29 100755
  
      # Add the sysroot to base_cmake_args.
      if platform.machine() == 'aarch64':
-@@ -834,79 +854,95 @@ def main():
+@@ -834,79 +853,94 @@ def main():
    cflags += libxml_cflags
    cxxflags += libxml_cflags
  
@@ -220,7 +219,6 @@ index a75e176863061..447d986653b29 100755
 +    '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
 +    '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
 +    '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-+    # '-DLLVM_CCACHE_BUILD=ON',
 +  ]
 +  # PGO needs libclang_rt.profile but none of the other compiler-rt stuff.
 +  bootstrap_args.extend([
@@ -300,7 +298,7 @@ index a75e176863061..447d986653b29 100755
  
    if args.pgo:
      print('Building instrumented compiler')
-@@ -916,9 +952,9 @@ def main():
+@@ -916,9 +950,9 @@ def main():
      os.chdir(LLVM_INSTRUMENTED_DIR)
  
      instrument_args = base_cmake_args + [
@@ -313,7 +311,7 @@ index a75e176863061..447d986653b29 100755
          '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
          '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
          '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-@@ -932,7 +968,7 @@ def main():
+@@ -932,7 +966,7 @@ def main():
  
      RunCommand(['cmake'] + instrument_args + [os.path.join(LLVM_DIR, 'llvm')],
                 msvc_arch='x64')
@@ -322,7 +320,7 @@ index a75e176863061..447d986653b29 100755
      print('Instrumented compiler built.')
  
      # Train by building some C++ code.
-@@ -961,8 +997,10 @@ def main():
+@@ -961,8 +995,10 @@ def main():
      with open(training_source, 'wb') as f:
        DownloadUrl(CDS_URL + '/' + training_source, f)
      train_cmd = [os.path.join(LLVM_INSTRUMENTED_DIR, 'bin', 'clang++'),
@@ -335,7 +333,7 @@ index a75e176863061..447d986653b29 100755
      if sys.platform == 'darwin':
        train_cmd.extend(['-isysroot', isysroot])
      RunCommand(train_cmd, msvc_arch='x64')
-@@ -1011,12 +1049,8 @@ def main():
+@@ -1011,12 +1047,8 @@ def main():
    if lld is not None: base_cmake_args.append('-DCMAKE_LINKER=' + lld)
    final_install_dir = args.install_dir if args.install_dir else LLVM_BUILD_DIR
    cmake_args = base_cmake_args + [
@@ -349,7 +347,7 @@ index a75e176863061..447d986653b29 100755
    ]
    if not args.no_tools:
      cmake_args.extend([
-@@ -1028,7 +1062,19 @@ def main():
+@@ -1028,7 +1060,19 @@ def main():
    if args.pgo:
      cmake_args.append('-DLLVM_PROFDATA_FILE=' + LLVM_PROFDATA_FILE)
    if args.thinlto:
@@ -370,7 +368,7 @@ index a75e176863061..447d986653b29 100755
    if sys.platform == 'win32':
      cmake_args.append('-DLLVM_ENABLE_ZLIB=FORCE_ON')
  
-@@ -1078,28 +1124,29 @@ def main():
+@@ -1078,28 +1122,29 @@ def main():
           compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
               'CMAKE_SYSROOT=%s' % sysroot_amd64,
           ]))
@@ -422,7 +420,7 @@ index a75e176863061..447d986653b29 100755
    elif sys.platform == 'win32':
      runtimes_triples_args.append(
          ('i386-pc-windows-msvc',
-@@ -1207,26 +1254,27 @@ def main():
+@@ -1207,26 +1252,27 @@ def main():
    # will be created which contains the necessary source files for compilation.
    # MLGO is only officially supported on linux. This condition is checked at
    # the top of main()
@@ -470,7 +468,7 @@ index a75e176863061..447d986653b29 100755
  
    # Convert FOO=BAR CMake flags per triple into
    # -DBUILTINS_$triple_FOO=BAR/-DRUNTIMES_$triple_FOO=BAR and build up
-@@ -1267,7 +1315,7 @@ def main():
+@@ -1267,7 +1313,7 @@ def main():
      # Instrument.
      RunCommand([
          'bin/llvm-bolt', 'bin/clang', '-o', 'bin/clang-bolt.inst',
@@ -479,7 +477,7 @@ index a75e176863061..447d986653b29 100755
          '--instrumentation-file=' +
          os.path.join(bolt_profiles_dir, 'prof.fdata')
      ])
-@@ -1283,8 +1331,6 @@ def main():
+@@ -1283,8 +1329,6 @@ def main():
      bolt_train_cmake_args = base_cmake_args + [
          '-DLLVM_TARGETS_TO_BUILD=X86',
          '-DLLVM_ENABLE_PROJECTS=clang',
@@ -488,7 +486,7 @@ index a75e176863061..447d986653b29 100755
          '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
          '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
          '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-@@ -1296,6 +1342,8 @@ def main():
+@@ -1296,6 +1340,8 @@ def main():
          os.path.join(LLVM_BUILD_DIR, 'bin/clang-bolt.inst'),
          '-DCMAKE_ASM_COMPILER_ID=Clang',
      ]
@@ -497,7 +495,7 @@ index a75e176863061..447d986653b29 100755
      RunCommand(['cmake'] + bolt_train_cmake_args +
                 [os.path.join(LLVM_DIR, 'llvm')])
      RunCommand([
-@@ -1312,9 +1360,14 @@ def main():
+@@ -1312,9 +1358,14 @@ def main():
      ])
      RunCommand([
          'bin/llvm-bolt', 'bin/clang', '-o', 'bin/clang-bolt.opt', '-data',
